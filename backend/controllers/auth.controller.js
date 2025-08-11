@@ -4,7 +4,7 @@ import Response from "../utils/Response.js";
 const authController = {
     me: async (req, res) => {
         try {
-            const existingUser = await authService.getUser(req.user.id)
+            const existingUser = await authService.getUser(req.user.id);
             const response = Response.ok(existingUser, "User profile retrieved successfully");
             return res.status(response.status).json(response.toJSON());
         }
