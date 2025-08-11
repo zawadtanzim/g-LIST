@@ -1,5 +1,33 @@
 {
+  "name": "backend",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "dev": "NODE_ENV=development node server.js",
+    "start": "NODE_ENV=production node server.js",
+    "test": "cross-env NODE_ENV=test node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test:watch": "cross-env NODE_ENV=test node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
+    "test:coverage": "cross-env NODE_ENV=test jest --coverage"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "description": "",
   "dependencies": {
-    "express": "^5.1.0"
+    "@prisma/client": "^6.13.0",
+    "@supabase/supabase-js": "^2.53.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "events": "^3.3.0",
+    "express": "^5.1.0",
+    "prisma": "^6.13.0",
+    "winston": "^3.17.0"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^9.9.0",
+    "cross-env": "^10.0.0",
+    "jest": "^30.0.5",
+    "supertest": "^7.1.4"
   }
 }

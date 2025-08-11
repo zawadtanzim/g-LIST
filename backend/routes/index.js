@@ -1,0 +1,5 @@
+export { default as authRouter } from "./auth.js"
+export { default as groupRouter } from "./groups.js"
+export { default as invitationRouter } from "./invitations.js"
+export { default as itemRouter} from "./items.js"
+export { default as userRouter } from "./users.js"
