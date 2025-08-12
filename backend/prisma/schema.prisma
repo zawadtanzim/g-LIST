@@ -108,6 +108,7 @@ model UserLists {
   list_id Int @unique
   interval_time DateTime @db.Time()
   interval_freq ReminderFrequency
+  updated_at DateTime? @db.Timestamptz
 
   Users Users @relation(fields: [user_id], references: [id], onDelete: Cascade)
   Lists Lists @relation(fields: [list_id], references: [id], onDelete: Cascade)
@@ -122,6 +123,7 @@ model GroupLists {
   list_id Int @unique
   interval_time DateTime @db.Time()
   interval_freq ReminderFrequency
+  updated_at DateTime? @db.Timestamptz
   
   Groups Groups @relation(fields: [group_id], references: [id], onDelete: Cascade)
   Lists Lists @relation(fields: [list_id], references: [id], onDelete: Cascade)

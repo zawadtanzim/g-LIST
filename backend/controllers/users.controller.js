@@ -83,7 +83,7 @@ const userController = {
 
     updateUser: async (req, res) => {
         try {
-            const updatedUserDetails = await userService.updateUser(req.user.id, req.body);
+            const updatedUserDetails = await userService.updateUser(req.user.id, req.body, req.file);
             const response = Response.ok(updatedUserDetails, "User profile updated successfully");
             return res.status(response.status).json(response.toJSON());
         }

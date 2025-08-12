@@ -4,14 +4,14 @@ import prisma from '../config/prisma.js';
 const app = `http://localhost:${process.env.PORT}`;
 // Test data
 const testUser = {
-    email: `test-${Date.now()}@example.com`, // Unique email for each test run
+    email: `usertest1-${Date.now()}@example.com`, // Unique email for each test run
     password: 'TestPassword123!',
     first_name: 'Test',
     last_name: 'User'
 };
 
 const testUser2 = {
-    email: `test2-${Date.now()}@example.com`,
+    email: `usertest2-${Date.now()}@example.com`,
     password: 'TestPassword456!',
     first_name: 'Test2',
     last_name: 'User2'
@@ -331,18 +331,27 @@ describe('Auth Endpoints', () => {
 
     // Cleanup after all tests
     afterAll(async () => {
-        // Clean up test users from database
-        if (userIds.length > 0) {
-            await prisma.users.deleteMany({
-                where: {
-                    id: {
-                        in: userIds
-                    }
+        // Get all remaining test users
+        const remainingUsers = await prisma.users.findMany({
+            where: {
+                email: {
+                    contains: 'usertest'
                 }
-            });
+            },
+            select: { id: true }
+        });
+        
+        // Delete each user through your service (proper cleanup)
+        for (const user of remainingUsers) {
+            try {
+                // Import your user service
+                const userService = await import('../services/users.service.js');
+                await userService.default.deleteUser(user.id);
+            } catch (error) {
+                console.log(`Failed to delete test user ${user.id}:`, error.message);
+            }
         }
         
-        // Close Prisma connection
         await prisma.$disconnect();
     });
 });
