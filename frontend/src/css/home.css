@@ -1,0 +1,116 @@
+/* Home Page Styles */
+:root {
+  --deep-plum: #4B3B40;
+  --warm-taupe: #82735C;
+  --olive-green: #9DB17C;
+  --mint-green: #9CDE9F;
+  --pale-green: #D1F5BE;
+  --button-hover: #6b5d45;
+  --font-main: 'Segoe UI', Arial, sans-serif;
+}
+  background: var(--pale-green);
+  font-family: var(--font-main);
+  color: var(--deep-plum);
+}
+body {
+  min-height: 100vh;
+  margin: 0;
+  background: var(--pale-green);
+  font-family: var(--font-main);
+  color: var(--deep-plum);
+}
+nav {
+  background: none;
+  border-radius: 0;
+  padding: 16px 0;
+}
+.nav-links a {
+  color: var(--deep-plum);
+  text-decoration: none;
+  margin: 0 12px;
+  font-weight: bold;
+  transition: color 0.2s;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  background: var(--pale-green);
+nav {
+  background: none;
+  box-shadow: none;
+  border: none;
+  padding: 32px 0 0 0; /* increased top padding for spacing */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 10;
+  color: var(--deep-plum);
+}
+}
+
+nav {
+  background: none;
+  box-shadow: none;
+  border: none;
+  padding: 16px 0 0 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 10;
+}
+.nav-links {
+  display: flex;
+  gap: 24px;
+}
+.nav-links a {
+  color: var(--deep-plum);
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 1.1rem;
+  transition: color 0.2s;
+}
+.nav-links a:hover {
+  color: var(--mint-green);
+}
+.hero {
+  max-width: 500px;
+  margin: 120px auto 40px auto;
+  padding: 32px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(155, 177, 124, 0.1);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.cta-buttons {
+  display: flex;
+  gap: 16px;
+  margin-top: 24px;
+  justify-content: center;
+}
+.btn {
+  background: var(--warm-taupe);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 24px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn:hover {
+  background: var(--button-hover);
+  color: var(--mint-green);
+}
