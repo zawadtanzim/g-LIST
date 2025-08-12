@@ -41,8 +41,13 @@ export const authMiddleware = async (req, res, next) => {
 }
 
 export const requireUserOwnership = async (req, res, next) => {
+    console.log("Full req.params:", req.params);  // See all params
+    console.log("req.url:", req.url);              // See the actual URL
+    console.log("req.route.path:", req.route?.path); // See the route pattern
+
     const userID = req.user.id;
     const requestedUserDataID = req.params.id;
+    console.log(userID, requestedUserDataID)
 
     if (!userID || !requestedUserDataID) {
         const response = new Response({ status: 400 }, "Missing user_id or requested_user_data_id");

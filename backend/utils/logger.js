@@ -36,3 +36,4 @@ export const userLogger = createLogger('users');
 export const groupLogger = createLogger('groups');
 export const itemLogger = createLogger('items');
 export const invitationLogger = createLogger('invitations');
+export const uploadLogger = createLogger('uploads');
