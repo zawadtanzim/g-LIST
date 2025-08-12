@@ -3,28 +3,28 @@ import prisma from "../config/prisma.js";
 import { generateCode } from "../utils/codeGenerator.js";
 import { authLogger } from "../utils/logger.js";
 
-const createUserWithUniqueCode = async (userData, maxRetries = 3) => {
-    for (let attempt = 0; attempt < maxRetries; attempt++) {
-        try {
-            return await prisma.users.create({
-                data: {
-                    ...userData,
-                    user_code: generateCode("user")
-                }
-            });
-        } catch (error) {
-            if (error.code === 'P2002' && error.meta?.target?.includes('user_code')) {
-                if (attempt === maxRetries - 1) {
-                    authLogger.error(`Failed to generate unique user code after ${maxRetries} attempts`);
-                    throw new Error('Failed to generate unique user code');
-                }
-                authLogger.warn(`User code collision on attempt ${attempt + 1}, retrying...`);
-                continue;
-            }
-            throw error; 
-        }
-    }
-}
+// const createUserWithUniqueCode = async (userData, maxRetries = 3) => {
+//     for (let attempt = 0; attempt < maxRetries; attempt++) {
+//         try {
+//             return await prisma.users.create({
+//                 data: {
+//                     ...userData,
+//                     user_code: generateCode("user")
+//                 }
+//             });
+//         } catch (error) {
+//             if (error.code === 'P2002' && error.meta?.target?.includes('user_code')) {
+//                 if (attempt === maxRetries - 1) {
+//                     authLogger.error(`Failed to generate unique user code after ${maxRetries} attempts`);
+//                     throw new Error('Failed to generate unique user code');
+//                 }
+//                 authLogger.warn(`User code collision on attempt ${attempt + 1}, retrying...`);
+//                 continue;
+//             }
+//             throw error; 
+//         }
+//     }
+// }
 
 const authService = {
     getUser: async (userID) => {
@@ -117,12 +117,39 @@ const authService = {
 
             if (data.user) {
                 const prismaStart = Date.now();
-                newUser = await createUserWithUniqueCode({
-                    id: data.user.id,
-                    email,
-                    first_name,
-                    last_name
+                await prisma.$transaction(async (trxn) => {
+                    try {
+                        newUser = await trxn.users.create({
+                            data: {
+                                id: data.user.id,
+                                email,
+                                first_name,
+                                last_name,
+                                user_code: generateCode("user")
+                            }
+                        });
+
+                        const defaultList = await trxn.lists.create({
+                            data: {
+                                expected_total: 0.00,
+                                actual_total: 0.00
+                            }
+                        });
+
+                        await trxn.userLists.create({
+                            data: {
+                                user_id: newUser.id,
+                                list_id: defaultList.id,
+                                interval_time: new Date('1970-01-01T09:00:00Z'),
+                                interval_freq: "WEEKLY"
+                            }
+                        })
+                    }
+                    catch (error) {
+                        throw error
+                    }
                 });
+                
                 const prismaTime = Date.now() - prismaStart;
                 authLogger.info(`Prisma creation took: ${prismaTime}ms`);
                 authLogger.info(`User registered successfully: ${email} (${newUser.user_code})`);
@@ -214,6 +241,13 @@ const authService = {
     },
 
     signOut: async (token) => {
+        if (!token) {
+            authLogger.warn("Sign out attempted without access token");
+            const err = new Error("Access token is required");
+            err.status = 400;
+            throw err;
+        }
+
         try {
             const { error } = await supabasePublic.auth.signOut({ access_token: token });
 
@@ -233,7 +267,6 @@ const authService = {
             authLogger.error(`Signout error: ${error.message}`);
             throw new Error("Signout failed");
         }
-        
     },
 
     refreshToken: async (refreshToken) => {
