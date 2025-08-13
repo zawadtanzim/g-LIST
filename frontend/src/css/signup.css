@@ -7,11 +7,13 @@
   --pale-green: #D1F5BE;
   --button-hover: #6b5d45;
   --font-main: 'Segoe UI', Arial, sans-serif;
-}
 body {
   background: var(--pale-green);
   font-family: var(--font-main);
   color: var(--deep-plum);
+  min-height: 100vh;
+  margin: 0;
+}
 }
 main {
   max-width: 400px;
@@ -24,24 +26,14 @@ main {
   flex-direction: column;
   align-items: center;
 }
+}
 h2 {
   color: var(--deep-plum);
   font-weight: bold;
   margin-bottom: 16px;
 }
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  align-items: center;
-  width: 100%;
-}
 }
 input {
-  padding: 10px;
-  border: 1px solid var(--olive-green);
-  border-radius: 6px;
-  font-size: 1rem;
-  background: #fff;
   color: var(--deep-plum);
   width: 300px;
   box-sizing: border-box;

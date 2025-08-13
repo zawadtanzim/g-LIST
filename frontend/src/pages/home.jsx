@@ -7,9 +7,11 @@ const Home = () => {
 	return (
 		<>
 			<nav>
-				<div className="nav-links">
-					<a href="/signup">Sign Up</a>
-					<a href="/login">Login</a>
+				<div style={{ display: 'flex', width: '100%' }}>
+					<div style={{ marginLeft: 'auto' }} className="nav-links">
+						<a href="/signup" className="btn">Sign Up</a>
+						<a href="/login" className="btn">Login</a>
+					</div>
 				</div>
 			</nav>
 
@@ -33,7 +35,7 @@ const Home = () => {
 					{/* Buttons */}
 					<div className="cta-buttons">
 						  <a href="/signup" className="btn">Get Started</a>
-						<button className="btn-outline">Learn More</button>
+						<a href="/learnmore" className="btn">Learn More</a>
 					</div>
 				</section>
 			</div>
