@@ -10,6 +10,11 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT;
 
+// const corsOptions = {
+//     origin: process.env.FRONTEND_URL, // Replace with your frontend's origin
+//     credentials: true // Allow sending cookies/authentication headers
+// };
+
 app.use(cors());
 app.use(express.json());
 

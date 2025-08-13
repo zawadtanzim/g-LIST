@@ -107,8 +107,8 @@ model Invitations {
 model UserLists {
   user_id String @unique
   list_id Int @unique
-  interval_time DateTime @default(dbgenerated("'18:00:00'::time")) @db.Time()
-  interval_freq ReminderFrequency @default(WEEKLY)
+  interval_time DateTime? @default(dbgenerated("'18:00:00'::time")) @db.Time()
+  interval_freq ReminderFrequency? @default(WEEKLY)
   updated_at DateTime? @db.Timestamptz
 
   Users Users @relation(fields: [user_id], references: [id], onDelete: Cascade)
@@ -122,8 +122,8 @@ model UserLists {
 model GroupLists {
   group_id Int @unique
   list_id Int @unique
-  interval_time DateTime @default(dbgenerated("'18:00:00'::time")) @db.Time()
-  interval_freq ReminderFrequency @default(WEEKLY)
+  interval_time DateTime? @default(dbgenerated("'18:00:00'::time")) @db.Time()
+  interval_freq ReminderFrequency? @default(WEEKLY)
   updated_at DateTime? @db.Timestamptz
   
   Groups Groups @relation(fields: [group_id], references: [id], onDelete: Cascade)
