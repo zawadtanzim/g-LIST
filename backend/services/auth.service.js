@@ -140,8 +140,6 @@ const authService = {
                             data: {
                                 user_id: newUser.id,
                                 list_id: defaultList.id,
-                                interval_time: new Date('1970-01-01T09:00:00Z'),
-                                interval_freq: "WEEKLY"
                             }
                         })
                     }

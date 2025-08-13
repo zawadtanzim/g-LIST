@@ -115,8 +115,6 @@ const userService = {
                     Lists: {
                         select: {
                             id : true,
-                            expected_total: true,
-                            actual_total: true,
                             created_at: true,
                             updated_at: true,
                             Items: {
@@ -138,13 +136,25 @@ const userService = {
                 }
             });
 
-            const list = {
+            const items = userList.Lists.Items;
+
+            const expected_total = items
+                .filter(item => item.item_status === "NEEDED" || item.item_status === "OPTIONAL")
+                .reduce((sum, item) => sum + (item.item_price * item.item_quantity), 0);
+
+            const actual_total = items
+                .filter(item => item.item_status === "PURCHASED")
+                .reduce((sum, item) => sum + (item.item_price * item.item_quantity), 0);
+
+                userList.Lists.expected_total = expected_total;
+                userList.Lists.actual_total = actual_total; 
+
+            const list = {  
                 ...userList.Lists,
                 item_count: userList.Lists.Items.length,
-                items: userList.Lists.Items
             };
 
-            userLogger.info(`Retrieved list with ${list.items.length} items for user ${userID}`);
+            userLogger.info(`Retrieved list with ${list.item_count} items for user ${userID}`);
             return list; 
         }
         catch (error) {
@@ -296,7 +306,7 @@ const userService = {
                         list_id: userList.list_id,
                         user_id: userList.user_id,
                         item_name,
-                        item_price: item_price || null,
+                        item_price: parseFloat(item_price) || null,
                         item_quantity,
                         item_status: item_status || "NEEDED"
                     }
@@ -527,6 +537,6 @@ const userService = {
             throw new Error("Failed to delete user");
         }
     }
-}
+};
 
 export default userService;
