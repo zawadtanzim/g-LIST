@@ -1,0 +1,157 @@
+:root {
+  --deep-plum: #4B3B40;
+  --warm-taupe: #82735C;
+  --olive-green: #9DB17C;
+  --mint-green: #9CDE9F;
+  --pale-green: #D1F5BE;
+  --button-hover: #6b5d45;
+  --font-main: 'Segoe UI', Arial, sans-serif;
+}
+body {
+  background: var(--pale-green);
+  font-family: var(--font-main);
+  color: var(--deep-plum);
+  margin: 0;
+  min-height: 100vh;
+}
+.top-nav {
+  background: none;
+  padding: 16px 24px;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 0 0 16px 16px;
+  z-index: 10;
+}
+.nav-links {
+  display: flex;
+  gap: 20px;
+  margin-left: 16px;
+}
+.top-nav a {
+  color: var(--deep-plum);
+  font-weight: bold;
+  text-decoration: none;
+  transition: color 0.2s;
+  font-size: 1rem;
+}
+.top-nav a:hover {
+  color: var(--mint-green);
+}
+.signout {
+  color: #b03a3a;
+  font-weight: 900;
+  margin-right: 16px;
+}
+/* Make .list-container and .totals-container visually identical in width, background, border, and shadow */
+.list-container, .totals-container {
+  max-width: 700px;
+  margin: 100px auto 40px auto;
+  background: white;
+  border-radius: 16px;
+  padding: 24px 32px;
+  box-shadow: 0 2px 8px rgba(155, 177, 124, 0.15);
+}
+
+/* Remove duplicate .totals-container rules below */
+h1 {
+  text-align: center;
+  margin-bottom: 24px;
+}
+.item-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 24px;
+}
+.item-table th,
+.item-table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--warm-taupe);
+  text-align: center;
+}
+.buttons {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+.btn {
+  background: var(--warm-taupe);
+  color: white;
+  border: none;
+  padding: 10px 28px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+.btn:hover {
+  background: var(--button-hover);
+}
+.clear {
+  background: #b03a3a;
+}
+.clear:hover {
+  background: #7d2a2a;
+}
+/* Keep only text alignment and font rules for .totals-container */
+.totals-container {
+  text-align: center;
+}
+.totals-container h2 {
+  margin-bottom: 12px;
+}
+.totals-container p {
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+/* Modal Styles */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 50;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.5);
+}
+.modal-content {
+  background-color: white;
+  margin: 10% auto;
+  padding: 20px 30px;
+  border-radius: 12px;
+  max-width: 400px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.modal-content h3 {
+  margin: 0 0 12px 0;
+  text-align: center;
+}
+.modal-content input,
+.modal-content select {
+  padding: 10px;
+  border: 1px solid var(--warm-taupe);
+  border-radius: 6px;
+  font-size: 1rem;
+  font-family: var(--font-main);
+}
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
+}
+/* Cross out purchased items */
+.purchased td {
+  text-decoration: line-through;
+  color: #999;
+  opacity: 0.7;
+}

@@ -64,7 +64,7 @@ export const requireUserOwnership = async (req, res, next) => {
 
 export const requireGroupMember = async (req, res, next) => {
     const userID = req.user.id;
-    const groupID = req.params.id;
+    const groupID = parseInt(req.body?.from_group_id || req.params.id);
 
     if (!userID || !groupID) {
         const response = new Response({ status: 400 }, "Missing user_id or group_id");
@@ -90,7 +90,7 @@ export const requireGroupMember = async (req, res, next) => {
 
 export const requireInvitationParticipant = async (req, res, next) => {
     const userID = req.user.id;
-    const invitationID = req.params.id;
+    const invitationID = Number(req.params.id);
 
     
     if (!userID || !invitationID) {
@@ -118,3 +118,72 @@ export const requireInvitationParticipant = async (req, res, next) => {
     const response = new Response({ status: 403 }, "You can only access invitations you sent or received");
     return res.status(response.status).json(response.toJSON());
 }
+
+export const requireItemAccess = async (req, res, next) => {
+    try {
+        const userID = req.user.id;
+        const itemID = Number(req.params.id);
+        console.log(userID, itemID);
+        
+        if (!userID || !itemID || isNaN(itemID)) {
+            const response = new Response({ status: 400 }, "Missing user ID or item ID");
+            return res.status(response.status).json(response.toJSON());
+        }
+        
+        const item = await prisma.items.findUnique({
+            where: { 
+                id: itemID 
+            },
+            include: {
+                Lists: {
+                    include: {
+                        UserLists: true,   // Personal list
+                        GroupLists: true   // Group list
+                    }
+                }
+            }
+        });
+        
+        if (!item) {
+            const response = new Response({ status: 404 }, "Item not found");
+            return res.status(response.status).json(response.toJSON());
+        }
+        
+        if (item.Lists.UserLists) {
+            if (item.Lists.UserLists.user_id !== userID) {
+                const response = new Response({ status: 403 }, "You can only access your own list items");
+                return res.status(response.status).json(response.toJSON());
+            }
+        }
+        else if (item.Lists.GroupLists) {
+            const membership = await prisma.groupMembers.findUnique({
+                where: {
+                    user_id_group_id: {
+                        user_id: userID,
+                        group_id: item.Lists.GroupLists.group_id
+                    }
+                }
+            });
+            
+            if (!membership) {
+                const response = new Response({ status: 403 }, "You must be a group member to access this item");
+                return res.status(response.status).json(response.toJSON());
+            }
+            
+            req.groupId = item.Lists.GroupLists.group_id;
+        }
+        else {
+            const response = new Response({ status: 400 }, "Item belongs to an invalid list type");
+            return res.status(response.status).json(response.toJSON());
+        }
+        
+        req.item = item;
+        req.listId = item.list_id;
+        next();
+        
+    } catch (error) {
+        console.error("requireItemAccess middleware error:", error);
+        const response = new Response({ status: 500 }, "Authorization check failed");
+        return res.status(response.status).json(response.toJSON());
+    }
+};
