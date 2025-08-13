@@ -14,14 +14,14 @@ export default function Signup() {
   const onSubmit = async (data) => {
     try {
       // First, sign up the user
-  await axios.post(`${API_BASE_URL}/auth/signup`, {
+      await axios.post(`${API_BASE_URL}/auth/signup`, {
         email: data.email,
         password: data.password,
         first_name: data.first_name,
         last_name: data.last_name,
       });
       // Then, sign in the user automatically
-  const response = await axios.post(`${API_BASE_URL}/auth/signin`, {
+      const response = await axios.post(`${API_BASE_URL}/auth/signin`, {
         email: data.email,
         password: data.password,
       });
@@ -34,7 +34,11 @@ export default function Signup() {
       alert("Signup successful! You are now logged in.");
       navigate("/welcome");
     } catch (err) {
-      alert("Signup failed! " + (err.response?.data?.message || err.message));
+      if (err.response && err.response.status === 409) {
+        alert("A user with this email already exists. Please use a different email or log in.");
+      } else {
+        alert("Signup failed! " + (err.response?.data?.message || err.message));
+      }
     }
   };
 
