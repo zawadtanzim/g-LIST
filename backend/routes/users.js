@@ -6,7 +6,7 @@ import { authMiddleware, requireUserOwnership, requireInvitationParticipant } fr
 const upload = multer({ 
     storage: multer.memoryStorage(),
     limits: { 
-        fileSize: 5 * 1024 * 1024  // 5MB limit
+        fileSize: 2 * 1024 * 1024  // 5MB limit
     },
     fileFilter: (req, file, cb) => {
         // Only allow image files
@@ -19,6 +19,7 @@ const upload = multer({
 });
 
 const userRouter = express.Router();
+
 userRouter.use(authMiddleware);
 
 userRouter.get("/:id", requireUserOwnership, userController.getUser);
