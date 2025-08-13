@@ -12,7 +12,7 @@ export default function Login() {
 
   const onSubmit = async (data) => {
     try {
-  const response = await axios.post(`${API_BASE_URL}/auth/signin`, {
+      const response = await axios.post(`${API_BASE_URL}/auth/signin`, {
         email: data.email,
         password: data.password,
       });

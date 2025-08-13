@@ -30,6 +30,7 @@ function GroceryList() {
         const data = res.data.data;
         if (data && Array.isArray(data.Items)) {
           setItems(data.Items.map(item => ({
+            id: item.id, // store backend id
             name: item.item_name,
             quantity: item.item_quantity,
             price: item.item_price ? Number(item.item_price) : 0,
@@ -54,15 +55,47 @@ function GroceryList() {
     return total;
   }, 0);
 
-  const handleCheckbox = (idx) => {
-    setItems(items => items.map((item, i) =>
-      i === idx ? { ...item, purchased: !item.purchased, status: !item.purchased ? "PURCHASED" : item.status } : item
-    ));
+  const handleCheckbox = async (idx) => {
+    const userId = localStorage.getItem("user_id");
+    const accessToken = localStorage.getItem("access_token");
+    const item = items[idx];
+    const newStatus = item.purchased ? item.status : "PURCHASED";
+    try {
+      await axios.put(
+        `${API_BASE_URL}/items/${item.id}/status`,
+        { item_status: newStatus },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        }
+      );
+      setItems(items => items.map((it, i) =>
+        i === idx ? { ...it, purchased: !it.purchased, status: newStatus } : it
+      ));
+    } catch (err) {
+      alert("Failed to update item status: " + (err.response?.data?.message || err.message));
+    }
   };
 
-  const handleClear = () => {
+  const handleClear = async () => {
     if (window.confirm("Are you sure you want to clear the entire list?")) {
-      setItems([]);
+      const userId = localStorage.getItem("user_id");
+      const accessToken = localStorage.getItem("access_token");
+      try {
+        await axios.put(
+          `${API_BASE_URL}/users/${userId}/list/clear`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`
+            }
+          }
+        );
+        setItems([]);
+      } catch (err) {
+        alert("Failed to clear list: " + (err.response?.data?.message || err.message));
+      }
     }
   };
 
