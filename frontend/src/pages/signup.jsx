@@ -1,3 +1,4 @@
+import { connectSocket } from "../services/socketClient";
 
 import React from "react";
 import { useForm } from "react-hook-form";
@@ -34,6 +35,9 @@ export default function Signup() {
       if (response.data && response.data.data && response.data.data.tokens && response.data.data.tokens.access_token) {
         localStorage.setItem("access_token", response.data.data.tokens.access_token);
       }
+  // Connect socket after signup
+  const token = response.data.data.tokens?.access_token;
+  if (token) connectSocket(token);
   // Notify other components (like UserCodeFooter) to update
   window.dispatchEvent(new Event("user-auth-changed"));
   alert("Signup successful! You are now logged in.");

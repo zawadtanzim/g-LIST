@@ -306,30 +306,26 @@ const invitationService = {
                     throw err;
                 }
 
-                const existingRequest = await trxn.invitations.findFirst({
-                    where: {
-                        from_user_id: fromUserID,
-                        to_user_id: toUser.id,
-                        type: "START_GROUP",
-                        status: "PENDING"
+                // Create the group first
+                const newGroup = await trxn.groups.create({
+                    data: {
+                        group_name: group_name,
+                        group_code: generateCode(),
                     }
                 });
 
-                if (existingRequest) {
-                    const err = new Error("You already have a pending request to start a group with this user");
-                    err.status = 409;
-                    throw err;
-                }
+                // Add both users as pending members (optional, or just invite)
 
+                // Create the invitation with group_id
                 const invite  = await trxn.invitations.create({
                     data: {
                         from_user_id: fromUserID,
                         to_user_id: toUser.id,
+                        group_id: newGroup.id,
+                        group_name: group_name, // Ensure group_name is set on the invitation
                         type: "START_GROUP",
                         status: "PENDING",
                         message: message || null,
-                        group_name,
-
                     }
                 });
 
