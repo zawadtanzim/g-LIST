@@ -19,12 +19,17 @@ export default function Login() {
       // Save user_id to localStorage
       if (response.data && response.data.data && response.data.data.user && response.data.data.user.id) {
         localStorage.setItem("user_id", response.data.data.user.id);
+        if (response.data.data.user.user_code) {
+          localStorage.setItem("user_code", response.data.data.user.user_code);
+        }
       }
       if (response.data && response.data.data && response.data.data.tokens && response.data.data.tokens.access_token) {
         localStorage.setItem("access_token", response.data.data.tokens.access_token);
       }
-      alert("Login successful!");
-      navigate("/welcome");
+  // Notify other components (like UserCodeFooter) to update
+  window.dispatchEvent(new Event("user-auth-changed"));
+  alert("Login successful!");
+  navigate("/welcome");
     } catch (err) {
       alert("Login failed: " + (err.response?.data?.message || err.message));
     }

@@ -34,8 +34,8 @@ const Home = () => {
 
 					{/* Buttons */}
 					<div className="cta-buttons">
-						  <a href="/signup" className="btn">Get Started</a>
-						<a href="/learnmore" className="btn">Learn More</a>
+										  <a href="/signup" className="btn">Get Started</a>
+										  <a href="/learnmore" className="btn">Learn More</a>
 					</div>
 				</section>
 			</div>

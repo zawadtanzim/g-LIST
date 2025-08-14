@@ -55,11 +55,18 @@ function GroceryList() {
     return total;
   }, 0);
 
-  const handleCheckbox = async (idx) => {
+  const handleCheckbox = async (itemId) => {
+    if (!itemId) {
+      alert("Error: Item ID is undefined. Cannot update status.");
+      return;
+    }
     const userId = localStorage.getItem("user_id");
     const accessToken = localStorage.getItem("access_token");
+    const idx = items.findIndex(it => it.id === itemId);
+    if (idx === -1) return;
     const item = items[idx];
-    const newStatus = item.purchased ? item.status : "PURCHASED";
+  // If currently purchased, unchecking should set to NEEDED; if not, set to PURCHASED
+  const newStatus = item.purchased ? "NEEDED" : "PURCHASED";
     try {
       await axios.put(
         `${API_BASE_URL}/items/${item.id}/status`,
@@ -142,6 +149,7 @@ function GroceryList() {
           const data = res.data.data;
           if (data && Array.isArray(data.Items)) {
             setItems(data.Items.map(item => ({
+              id: item.id,
               name: item.item_name,
               quantity: item.item_quantity,
               price: item.item_price ? Number(item.item_price) : 0,
@@ -168,13 +176,17 @@ function GroceryList() {
 
   return (
     <>
+
       <nav className="top-nav">
         <div className="nav-links">
-          <a href="#">My List</a>
-          <a href="#">View Groups</a>
-          <a href="#" className="signout" onClick={() => {
+          <a href="/welcome" onClick={e => { e.preventDefault(); navigate("/welcome"); }}>My List</a>
+          <a href="/groups" onClick={e => { e.preventDefault(); navigate("/groups"); }}>View Groups</a>
+          <a href="#" className="signout" onClick={e => {
+            e.preventDefault();
             localStorage.removeItem("user_id");
             localStorage.removeItem("access_token");
+            localStorage.removeItem("user_code");
+            window.dispatchEvent(new Event("user-auth-changed"));
             navigate("/");
           }}>Sign Out</a>
         </div>
@@ -198,7 +210,7 @@ function GroceryList() {
             <tbody>
               {items.map((item, idx) => (
                 <tr key={idx} className={item.purchased ? "purchased" : ""}>
-                  <td><input type="checkbox" checked={item.purchased} onChange={() => handleCheckbox(idx)} /></td>
+                  <td><input type="checkbox" checked={item.purchased} onChange={() => handleCheckbox(item.id)} /></td>
                   <td>{item.name}</td>
                   <td>{item.quantity}</td>
                   <td>${item.price.toFixed(2)}</td>
