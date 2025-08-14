@@ -2,27 +2,18 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import http from "http";
-import { Server } from "socket.io";
 import { authRouter, groupRouter, invitationRouter, itemRouter, userRouter } from "./routes/index.js";
 import Response from "./utils/Response.js";
 import { appLogger } from "./utils/logger.js";
+import { initializeSocket } from "./socket.js";
 
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT;
 const server = http.createServer(app);
-const io = new Server(server, {
-    cors: {
-        origin: process.env.FRONTEND_URL || "*",
-        methods: ["GET", "POST"]
-    }
-});
 
-io.on("connection", (socket) => {
-    console.log("Socket.IO client connected:", socket.id);
-    // You can add more event handlers here
-});
+initializeSocket(server);
 
 // const corsOptions = {
 //     origin: process.env.FRONTEND_URL, // Replace with your frontend's origin
@@ -40,7 +31,7 @@ app.use((req, res, next) => {
         userAgent: req.get('User-Agent')
     });
     next();
-})
+});
 
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/users', userRouter);
@@ -49,10 +40,10 @@ app.use('/api/v1/items', itemRouter);
 app.use('/api/v1/invitations', invitationRouter);
 
 app.use((err, req, res, next) => {
-    appLogger.error('Unhandled error', { error: err.message, stack: err.stack })
-    const response = Response.internalServerError('Internal server error')
+    appLogger.error('Unhandled error', { error: err.message, stack: err.stack });
+    const response = Response.internalServerError('Internal server error');
     res.status(response.status).json(response.toJSON());
-})
+});
 
 server.listen(port, () => {
     appLogger.info("Server started", { port: port, env: process.env.NODE_ENV });

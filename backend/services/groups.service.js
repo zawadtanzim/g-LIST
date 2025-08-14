@@ -1,6 +1,7 @@
 import prisma from "../config/prisma.js"
 import { groupLogger } from "../utils/logger.js";
 import uploadService from "./upload.service.js";
+import { eventEmitter } from "../utils/events.js";
 
 const groupService = {
     getDetails: async (groupID) => {
@@ -260,12 +261,71 @@ const groupService = {
                     }
                 });
 
+                const allItems = await trxn.items.findMany({
+                    where: { 
+                        list_id: groupList.list_id 
+                    },
+                    select: {
+                        item_price: true,
+                        item_quantity: true,
+                        item_status: true
+                    }
+                });
+
+                let expected_total = 0;
+                let actual_total = 0;
+
+                allItems.forEach(listItem => {
+                    const price = parseFloat(listItem.item_price) || 0;
+                    const quantity = parseInt(listItem.item_quantity) || 0;
+                    const itemTotal = price * quantity; 
+
+                    if (["NEEDED", "OPTIONAL"].includes(listItem.item_status)) {
+                        expected_total += itemTotal;
+                    }
+                    if (listItem.item_status === "PURCHASED") {
+                        actual_total += itemTotal;
+                    }
+                });
+
+                expected_total = Math.round(expected_total * 100) / 100;
+                actual_total = Math.round(actual_total * 100) / 100;
+
+                // Update the list totals
+                await trxn.lists.update({
+                    where: { 
+                        id: groupList.list_id 
+                    },
+                    data: { 
+                        expected_total, actual_total 
+                    }
+                });
+
                 item.added_by = addedByUser;
-                return item;
+                return {
+                    item,
+                    updated_totals: {
+                        expected_total,
+                        actual_total
+                    }
+                };
+            });
+
+            eventEmitter.emit('list_item_added', {
+                groupID,
+                item: newItem,
+                user: {
+                    id: userID,
+                    first_name: newItem.added_by.first_name,
+                    last_name: newItem.added_by.last_name
+                }
             });
 
             groupLogger.info(`Added new item to group list for group ${groupID}`);
-            return newItem; 
+            return { 
+                newItem,
+                updated_totals: newItem.updated_totals
+            }; 
         }
         catch (error) {
             if (error.status) {
@@ -351,7 +411,7 @@ const groupService = {
         }
     },
 
-    clearList: async (groupID) => {
+    clearList: async (groupID, userID) => {
         if (!groupID) {
             groupLogger.warn("clearList called without groupID");
             const err = new Error("Group ID is required");
@@ -392,6 +452,20 @@ const groupService = {
                     deletedCount: deletedItems.count,
                     message: `Cleared ${deletedItems.count} items from list`
                 };
+            });
+
+            const user = await prisma.users.findUnique({
+                where: { id: userID },
+                select: { first_name: true, last_name: true }
+            });
+            
+            eventEmitter.emit('list_cleared', {
+                groupID,
+                user: {
+                    id: userID,
+                    first_name: user?.first_name || 'Unknown',
+                    last_name: user?.last_name || 'User'
+                }
             });
 
             groupLogger.info(`Cleared list for group ${groupID}: ${result.deletedCount} items deleted`);

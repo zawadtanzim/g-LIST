@@ -145,6 +145,7 @@ const invitationService = {
             });
 
             invitationLogger.info(`Sent invite to user ${to_user_code} for group ${from_group_id}`);
+            eventEmitter.emit('invitation_received', sentInvite);
             return sentInvite;
         }
         catch (error) {
@@ -246,6 +247,7 @@ const invitationService = {
             });
 
             invitationLogger.info(`Sent join request to group ${to_group_code} (${sentRequests.invitations.length} invitations created)`);
+            eventEmitter.emit('invitation_received', sentRequests.invitations[0]);
             return {
                 data: {
                     id: sentRequests.invitations[0]?.id,
@@ -333,6 +335,7 @@ const invitationService = {
             });
 
             invitationLogger.info(`Sent invite to user ${to_user_code} from user ${fromUserID}`);
+            eventEmitter.emit('invitation_received', startGroup);
             return startGroup;
         }
         catch (error) {
@@ -472,19 +475,21 @@ const invitationService = {
                     newMembers.push(newMember);
                     
                     if (invitation.type === "JOIN_REQUEST") {
-                        await trxn.invitations.updateMany({
+                        await trxn.invitations.deleteMany({
                             where: {
                                 from_user_id: invitation.from_user_id, 
                                 group_id: invitation.group_id,          
                                 type: "JOIN_REQUEST",                   
                                 status: "PENDING"                      
                             },
-                            data: {
-                                status: "ACCEPTED",
-                                responded_at: new Date()
+                        });
+                    }
+                    else {
+                        await trxn.invitations.delete({
+                            where: { 
+                                id: invitationID 
                             }
                         });
-                        
                     }
 
                     // Get group details for response
@@ -494,26 +499,18 @@ const invitationService = {
                         }
                     });
                 }
-                let updatedInvitation;
+                
+                // Store invitation data for event emission before deletion
+                const invitationData = {
+                    ...invitation,
+                    status: 'ACCEPTED' // For event emission purposes
+                };
 
-                if (invitation.type === "JOIN_REQUEST") {
-                    updatedInvitation = await trxn.invitations.findUnique({
-                        where: {
-                            id: invitationID
-                        }
-                    });
-                }
-                else {
-                    updatedInvitation = await trxn.invitations.update({
-                        where: { 
-                            id: invitationID 
-                        },
-                        data: {
-                            status: "ACCEPTED",
-                            responded_at: new Date()
-                        }
-                    });
-                }
+                eventEmitter.emit('invitation_status_updated', {
+                    invitation: result.invitationData,
+                    status: 'ACCEPTED',
+                    recipientData: result.invitationData.ToUser
+                });
 
                 return {
                     invitation: updatedInvitation,
@@ -597,12 +594,8 @@ const invitationService = {
                     throw err;
                 }
                 
-                const updatedInvitation = await trxn.invitations.update({
-                    where: { id: invitationID },
-                    data: {
-                        status: "DECLINED",
-                        responded_at: new Date()
-                    }
+                const updatedInvitation = await trxn.invitations.delete({
+                    where: { id: invitationID }
                 });
                 
                 return {
@@ -612,7 +605,12 @@ const invitationService = {
             });
 
             invitationLogger.info(`User ${userID} declined invitation ${invitationID} of type ${result.invitationData.type}`);
-
+            
+            eventEmitter.emit('invitation_status_updated', {
+                invitation: result.invitationData,
+                status: 'DECLINED',
+                recipientData: result.invitationData.ToUser
+            });
             return {
                 invitation: result.invitation,
                 type: result.invitationData.type
@@ -680,14 +678,16 @@ const invitationService = {
                 }
                 
                 // Update invitation status to cancelled
-                const updatedInvitation = await trxn.invitations.update({
-                    where: { id: invitationID },
-                    data: {
-                        status: "CANCELLED",
-                        responded_at: new Date()
-                    }
+                const updatedInvitation = await trxn.invitations.delete({
+                    where: { id: invitationID }
                 });
                 
+                eventEmitter.emit('invitation_status_updated', {
+                    invitation: result.invitationData,
+                    status: 'CANCELLED',
+                    recipientData: result.invitationData.ToUser
+                });
+
                 return {
                     invitation: updatedInvitation,
                     invitationData: invitation

@@ -95,8 +95,8 @@ const groupController = {
     clearList: async (req, res) => {
         try {
             const groupID = parseInt(req.params.id);
-
-            const clearedGroupList = await groupService.clearList(groupID);
+            const userID = req.user.id;
+            const clearedGroupList = await groupService.clearList(groupID, userID);
             const response = Response.ok(clearedGroupList, "Group list cleared successfully");
             return res.status(response.status).json(response.toJSON());
         }

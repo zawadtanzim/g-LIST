@@ -19,7 +19,7 @@ const itemController = {
     updateDetails: async (req, res) => {
         try {
             const itemID = parseInt(req.params.id);
-            const updatedItem = await itemService.updateDetails(itemID, req.body);
+            const updatedItem = await itemService.updateDetails(itemID, req.body, req.user.id, req.groupId);
             const response = Response.ok(updatedItem, "Item details retrieved successfully");
             return res.status(response.status).json(response.toJSON());
         }
@@ -33,7 +33,7 @@ const itemController = {
     updateStatus: async (req, res) => {
         try {   
             const itemID = parseInt(req.params.id);
-            const updatedItem = await itemService.updateStatus(itemID, req.body);
+            const updatedItem = await itemService.updateStatus(itemID, req.body, req.user.id, req.groupId);
             const response = Response.ok(updatedItem, "Item status updated successfully");
             return res.status(response.status).json(response.toJSON());
         }
@@ -47,7 +47,7 @@ const itemController = {
     deleteItem: async (req, res) => {
         try {
             const itemID = parseInt(req.params.id);
-            const deletedItem = await itemService.deleteItem(itemID);
+            const deletedItem = await itemService.deleteItem(itemID, req.user.id, req.groupId);
             const response = Response.ok(deletedItem, "Item deleted successfully");
             return res.status(response.status).json(response.toJSON());
         }
