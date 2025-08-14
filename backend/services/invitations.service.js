@@ -479,19 +479,21 @@ const invitationService = {
                     newMembers.push(newMember);
                     
                     if (invitation.type === "JOIN_REQUEST") {
-                        await trxn.invitations.updateMany({
+                        await trxn.invitations.deleteMany({
                             where: {
                                 from_user_id: invitation.from_user_id, 
                                 group_id: invitation.group_id,          
                                 type: "JOIN_REQUEST",                   
                                 status: "PENDING"                      
                             },
-                            data: {
-                                status: "ACCEPTED",
-                                responded_at: new Date()
+                        });
+                    }
+                    else {
+                        await trxn.invitations.delete({
+                            where: { 
+                                id: invitationID 
                             }
                         });
-                        
                     }
 
                     // Get group details for response
@@ -501,26 +503,12 @@ const invitationService = {
                         }
                     });
                 }
-                let updatedInvitation;
-
-                if (invitation.type === "JOIN_REQUEST") {
-                    updatedInvitation = await trxn.invitations.findUnique({
-                        where: {
-                            id: invitationID
-                        }
-                    });
-                }
-                else {
-                    updatedInvitation = await trxn.invitations.update({
-                        where: { 
-                            id: invitationID 
-                        },
-                        data: {
-                            status: "ACCEPTED",
-                            responded_at: new Date()
-                        }
-                    });
-                }
+                
+                // Store invitation data for event emission before deletion
+                const invitationData = {
+                    ...invitation,
+                    status: 'ACCEPTED' // For event emission purposes
+                };
 
                 eventEmitter.emit('invitation_status_updated', {
                     invitation: result.invitationData,
@@ -610,12 +598,8 @@ const invitationService = {
                     throw err;
                 }
                 
-                const updatedInvitation = await trxn.invitations.update({
-                    where: { id: invitationID },
-                    data: {
-                        status: "DECLINED",
-                        responded_at: new Date()
-                    }
+                const updatedInvitation = await trxn.invitations.delete({
+                    where: { id: invitationID }
                 });
                 
                 return {
@@ -698,12 +682,8 @@ const invitationService = {
                 }
                 
                 // Update invitation status to cancelled
-                const updatedInvitation = await trxn.invitations.update({
-                    where: { id: invitationID },
-                    data: {
-                        status: "CANCELLED",
-                        responded_at: new Date()
-                    }
+                const updatedInvitation = await trxn.invitations.delete({
+                    where: { id: invitationID }
                 });
                 
                 eventEmitter.emit('invitation_status_updated', {
@@ -711,7 +691,7 @@ const invitationService = {
                     status: 'CANCELLED',
                     recipientData: result.invitationData.ToUser
                 });
-                
+
                 return {
                     invitation: updatedInvitation,
                     invitationData: invitation

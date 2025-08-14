@@ -355,7 +355,7 @@ const userService = {
                     expected_total,
                     actual_total
                 };
-                
+
                 return item;
             });
 
@@ -516,6 +516,13 @@ const userService = {
         }
 
         try {
+            const { error: signOutError } = await supabaseAdmin.auth.admin.signOut(userID, 'global');
+            if (signOutError) {
+                userLogger.warn(`Failed to sign out user ${userID} before deletion: ${signOutError.message}`);
+                // Continue with deletion even if signout fails
+            } else {
+                userLogger.info(`Successfully signed out user ${userID} before deletion`);
+            }
             await prisma.$transaction(async (trxn) => {
                 const userGroups = await trxn.groupMembers.findMany({
                     where: { 
