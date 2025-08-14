@@ -111,6 +111,8 @@ export default function Groups() {
             e.preventDefault();
             localStorage.removeItem("user_id");
             localStorage.removeItem("access_token");
+            localStorage.removeItem("user_code");
+            window.dispatchEvent(new Event("user-auth-changed"));
             navigate("/");
           }}>Sign Out</a>
         </div>

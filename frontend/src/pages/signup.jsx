@@ -27,12 +27,17 @@ export default function Signup() {
       });
       if (response.data && response.data.data && response.data.data.user && response.data.data.user.id) {
         localStorage.setItem("user_id", response.data.data.user.id);
+        if (response.data.data.user.user_code) {
+          localStorage.setItem("user_code", response.data.data.user.user_code);
+        }
       }
       if (response.data && response.data.data && response.data.data.tokens && response.data.data.tokens.access_token) {
         localStorage.setItem("access_token", response.data.data.tokens.access_token);
       }
-      alert("Signup successful! You are now logged in.");
-      navigate("/welcome");
+  // Notify other components (like UserCodeFooter) to update
+  window.dispatchEvent(new Event("user-auth-changed"));
+  alert("Signup successful! You are now logged in.");
+  navigate("/welcome");
     } catch (err) {
       if (err.response && err.response.status === 409) {
         alert("A user with this email already exists. Please use a different email or log in.");

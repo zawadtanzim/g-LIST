@@ -65,7 +65,8 @@ function GroceryList() {
     const idx = items.findIndex(it => it.id === itemId);
     if (idx === -1) return;
     const item = items[idx];
-    const newStatus = item.purchased ? item.status : "PURCHASED";
+  // If currently purchased, unchecking should set to NEEDED; if not, set to PURCHASED
+  const newStatus = item.purchased ? "NEEDED" : "PURCHASED";
     try {
       await axios.put(
         `${API_BASE_URL}/items/${item.id}/status`,
@@ -184,6 +185,8 @@ function GroceryList() {
             e.preventDefault();
             localStorage.removeItem("user_id");
             localStorage.removeItem("access_token");
+            localStorage.removeItem("user_code");
+            window.dispatchEvent(new Event("user-auth-changed"));
             navigate("/");
           }}>Sign Out</a>
         </div>
