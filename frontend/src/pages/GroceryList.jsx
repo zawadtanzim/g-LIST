@@ -55,9 +55,15 @@ function GroceryList() {
     return total;
   }, 0);
 
-  const handleCheckbox = async (idx) => {
+  const handleCheckbox = async (itemId) => {
+    if (!itemId) {
+      alert("Error: Item ID is undefined. Cannot update status.");
+      return;
+    }
     const userId = localStorage.getItem("user_id");
     const accessToken = localStorage.getItem("access_token");
+    const idx = items.findIndex(it => it.id === itemId);
+    if (idx === -1) return;
     const item = items[idx];
     const newStatus = item.purchased ? item.status : "PURCHASED";
     try {
@@ -142,6 +148,7 @@ function GroceryList() {
           const data = res.data.data;
           if (data && Array.isArray(data.Items)) {
             setItems(data.Items.map(item => ({
+              id: item.id,
               name: item.item_name,
               quantity: item.item_quantity,
               price: item.item_price ? Number(item.item_price) : 0,
@@ -198,7 +205,7 @@ function GroceryList() {
             <tbody>
               {items.map((item, idx) => (
                 <tr key={idx} className={item.purchased ? "purchased" : ""}>
-                  <td><input type="checkbox" checked={item.purchased} onChange={() => handleCheckbox(idx)} /></td>
+                  <td><input type="checkbox" checked={item.purchased} onChange={() => handleCheckbox(item.id)} /></td>
                   <td>{item.name}</td>
                   <td>{item.quantity}</td>
                   <td>${item.price.toFixed(2)}</td>
