@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import http from "http";
+import { Server } from "socket.io";
 import { authRouter, groupRouter, invitationRouter, itemRouter, userRouter } from "./routes/index.js";
 import Response from "./utils/Response.js";
 import { appLogger } from "./utils/logger.js";
@@ -9,6 +11,18 @@ dotenv.config();
 
 const app = express();
 const port = process.env.PORT;
+const server = http.createServer(app);
+const io = new Server(server, {
+    cors: {
+        origin: process.env.FRONTEND_URL || "*",
+        methods: ["GET", "POST"]
+    }
+});
+
+io.on("connection", (socket) => {
+    console.log("Socket.IO client connected:", socket.id);
+    // You can add more event handlers here
+});
 
 // const corsOptions = {
 //     origin: process.env.FRONTEND_URL, // Replace with your frontend's origin
@@ -40,9 +54,9 @@ app.use((err, req, res, next) => {
     res.status(response.status).json(response.toJSON());
 })
 
-app.listen(port, () => {
+server.listen(port, () => {
     appLogger.info("Server started", { port: port, env: process.env.NODE_ENV });
-    console.log("Server is listening on port 8080.");
+    console.log("Server is listening on port " + port + ".");
 });
 
 export default app;

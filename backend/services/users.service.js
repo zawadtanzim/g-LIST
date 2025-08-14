@@ -177,7 +177,8 @@ const userService = {
         try {
             const receivedInvitations = await prisma.invitations.findMany({
                 where: {
-                    to_user_id: userID
+                    to_user_id: userID,
+                    status: "PENDING"
                 },
                 select: {
                     id: true,
@@ -229,7 +230,8 @@ const userService = {
         try {
             const sentInvitations = await prisma.invitations.findMany({
                 where: {
-                    from_user_id: userID
+                    from_user_id: userID,
+                    status: "PENDING"
                 },
                 select: {
                     id: true,
