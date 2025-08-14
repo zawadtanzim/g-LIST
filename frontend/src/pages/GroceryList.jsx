@@ -175,11 +175,13 @@ function GroceryList() {
 
   return (
     <>
+
       <nav className="top-nav">
         <div className="nav-links">
-          <a href="#">My List</a>
-          <a href="#">View Groups</a>
-          <a href="#" className="signout" onClick={() => {
+          <a href="/welcome" onClick={e => { e.preventDefault(); navigate("/welcome"); }}>My List</a>
+          <a href="/groups" onClick={e => { e.preventDefault(); navigate("/groups"); }}>View Groups</a>
+          <a href="#" className="signout" onClick={e => {
+            e.preventDefault();
             localStorage.removeItem("user_id");
             localStorage.removeItem("access_token");
             navigate("/");

@@ -1,0 +1,162 @@
+
+.groups-page {
+  --deep-plum: #4B3B40;
+  --warm-taupe: #82735C;
+  --olive-green: #9DB17C;
+  --mint-green: #9CDE9F;
+  --pale-green: #D1F5BE;
+  --button-hover: #6b5d45;
+  --font-main: 'Segoe UI', Arial, sans-serif;
+  max-width: 800px;
+  margin: auto;
+  padding: 0 2rem;
+  color: var(--deep-plum);
+  font-family: var(--font-main);
+}
+
+.groups-page {
+  background: var(--pale-green);
+}
+
+.groups-page .groups-top-bar {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  gap: 0.5rem;
+  z-index: 10;
+}
+
+.groups-page .btn {
+  background: var(--warm-taupe);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.groups-page .btn:hover {
+  background: var(--button-hover);
+  color: var(--mint-green);
+}
+
+.groups-page h1 {
+  text-align: center;
+  margin-top: 120px;
+  font-size: 2rem;
+}
+
+.groups-page .groups-container {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+}
+
+.groups-page .group-card {
+  background: white;
+  padding: 14px 18px;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(155, 177, 124, 0.2);
+  width: 100%;
+  max-width: 500px;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.groups-page .group-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 3px 8px rgba(155, 177, 124, 0.3);
+}
+
+/* Modals */
+.groups-page .modal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  z-index: 100;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+}
+
+
+.groups-page .modal-content {
+  background: #fff;
+  margin: 10% auto;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 500px;
+  min-width: 350px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+/* Invitations modal stays at 400px for better look */
+.groups-page .modal-content.invitation-modal {
+  max-width: 400px;
+  min-width: unset;
+}
+
+.groups-page .modal-content h2 {
+  margin-top: 0;
+}
+
+.groups-page .modal-content label {
+  display: block;
+  margin: 10px 0 5px;
+}
+
+.groups-page .modal-content input,
+.groups-page .modal-content textarea {
+  width: 100%;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-family: var(--font-main);
+}
+
+.groups-page textarea {
+  resize: vertical;
+}
+
+.groups-page .close {
+  float: right;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.groups-page .invitation-list h3 {
+  margin-top: 15px;
+}
+
+.groups-page .invitation-list ul {
+  list-style: none;
+  padding: 0;
+}
+
+.groups-page .invitation-list li {
+  background: var(--mint-green);
+  padding: 10px;
+  border-radius: 8px;
+  margin: 5px 0;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.groups-page .invitation-list li:hover {
+  background: var(--olive-green);
+  color: white;
+}
+
+/* Accept/Decline Buttons */
+.groups-page .response-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 15px;
+}
