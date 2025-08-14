@@ -145,6 +145,7 @@ const invitationService = {
             });
 
             invitationLogger.info(`Sent invite to user ${to_user_code} for group ${from_group_id}`);
+            eventEmitter.emit('invitation_received', sentInvite);
             return sentInvite;
         }
         catch (error) {
@@ -246,6 +247,7 @@ const invitationService = {
             });
 
             invitationLogger.info(`Sent join request to group ${to_group_code} (${sentRequests.invitations.length} invitations created)`);
+            eventEmitter.emit('invitation_received', sentRequests.invitations[0]);
             return {
                 data: {
                     id: sentRequests.invitations[0]?.id,
@@ -337,6 +339,7 @@ const invitationService = {
             });
 
             invitationLogger.info(`Sent invite to user ${to_user_code} from user ${fromUserID}`);
+            eventEmitter.emit('invitation_received', startGroup);
             return startGroup;
         }
         catch (error) {
@@ -519,6 +522,12 @@ const invitationService = {
                     });
                 }
 
+                eventEmitter.emit('invitation_status_updated', {
+                    invitation: result.invitationData,
+                    status: 'ACCEPTED',
+                    recipientData: result.invitationData.ToUser
+                });
+
                 return {
                     invitation: updatedInvitation,
                     group: newGroup,
@@ -616,7 +625,12 @@ const invitationService = {
             });
 
             invitationLogger.info(`User ${userID} declined invitation ${invitationID} of type ${result.invitationData.type}`);
-
+            
+            eventEmitter.emit('invitation_status_updated', {
+                invitation: result.invitationData,
+                status: 'DECLINED',
+                recipientData: result.invitationData.ToUser
+            });
             return {
                 invitation: result.invitation,
                 type: result.invitationData.type
@@ -690,6 +704,12 @@ const invitationService = {
                         status: "CANCELLED",
                         responded_at: new Date()
                     }
+                });
+                
+                eventEmitter.emit('invitation_status_updated', {
+                    invitation: result.invitationData,
+                    status: 'CANCELLED',
+                    recipientData: result.invitationData.ToUser
                 });
                 
                 return {

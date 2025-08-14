@@ -1,15 +1,19 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import http from "http"; 
 import { authRouter, groupRouter, invitationRouter, itemRouter, userRouter } from "./routes/index.js";
 import Response from "./utils/Response.js";
 import { appLogger } from "./utils/logger.js";
+import { initializeSocket } from "./socket.js";
 
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT;
 
+const server = http.createServer(app);
+initializeSocket(server);
 // const corsOptions = {
 //     origin: process.env.FRONTEND_URL, // Replace with your frontend's origin
 //     credentials: true // Allow sending cookies/authentication headers
@@ -40,7 +44,7 @@ app.use((err, req, res, next) => {
     res.status(response.status).json(response.toJSON());
 })
 
-app.listen(port, () => {
+server.listen(port, () => {
     appLogger.info("Server started", { port: port, env: process.env.NODE_ENV });
     console.log("Server is listening on port 8080.");
 });
