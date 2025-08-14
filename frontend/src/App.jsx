@@ -4,7 +4,9 @@ import Signup from "./pages/signup";
 import Login from "./pages/login";
 import Home from "./pages/home";
 import GroceryList from "./pages/GroceryList";
+
 import LearnMore from "./pages/LearnMore";
+import Groups from "./pages/Groups";
 
 function App() {
   return (
@@ -15,6 +17,7 @@ function App() {
   <Route path="/login" element={<Login />} />
   <Route path="/welcome" element={<GroceryList />} />
   <Route path="/learnmore" element={<LearnMore />} />
+  <Route path="/groups" element={<Groups />} />
   <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>
