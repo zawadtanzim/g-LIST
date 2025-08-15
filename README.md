@@ -3,6 +3,8 @@
 ### What is this project?
 Grocery Buddy is a collaborative grocery and group list web application. It lets you create personal and shared lists, invite others to groups, track items, and manage your shopping together in real time.
 
+Our app is deployed and available for anyone to test. You can try it here: https://g-list.vercel.app/
+
 ### Tech Stack
 - **Frontend:** React (Vite), Axios, CSS
 - **Backend:** Node.js, Express, Prisma ORM, PostgreSQL, Socket.IO
